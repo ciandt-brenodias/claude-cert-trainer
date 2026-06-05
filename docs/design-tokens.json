@@ -1,0 +1,169 @@
+{
+  "meta": {
+    "project": "cert-trainer",
+    "updated": "2026-06-05",
+    "stack": "Tailwind v4"
+  },
+  "color": {
+    "brand": {
+      "DEFAULT":    { "light": "#6366f1", "dark": "#818cf8", "tailwind": "indigo-500/400" },
+      "hover":      { "light": "#4f46e5", "dark": "#6366f1", "tailwind": "indigo-600/500" },
+      "bg":         { "light": "#eef2ff", "dark": "rgba(30,27,75,0.3)", "tailwind": "indigo-50" },
+      "text":       { "light": "#4f46e5", "dark": "#818cf8", "tailwind": "indigo-600/400" }
+    },
+    "semantic": {
+      "correct": {
+        "bg":        { "value": "#ecfdf5", "tailwind": "emerald-50" },
+        "border":    { "value": "#34d399", "tailwind": "emerald-400" },
+        "text":      { "value": "#065f46", "tailwind": "emerald-800" },
+        "chipBg":    { "value": "#d1fae5", "tailwind": "emerald-100" },
+        "chipText":  { "value": "#059669", "tailwind": "emerald-600" },
+        "label":     { "value": "#047857", "tailwind": "emerald-700" }
+      },
+      "incorrect": {
+        "bg":        { "value": "#fef2f2", "tailwind": "red-50" },
+        "border":    { "value": "#f87171", "tailwind": "red-400" },
+        "text":      { "value": "#991b1b", "tailwind": "red-800" },
+        "panelBorder":{ "value": "#fecaca", "tailwind": "red-200" },
+        "label":     { "value": "#b91c1c", "tailwind": "red-700" }
+      },
+      "warning": {
+        "bg":        { "value": "#fffbeb", "tailwind": "amber-50" },
+        "text":      { "value": "#d97706", "tailwind": "amber-600" }
+      },
+      "passed": {
+        "bg":        { "value": "#ecfdf5", "tailwind": "emerald-50" },
+        "text":      { "value": "#047857", "tailwind": "emerald-700" }
+      },
+      "failed": {
+        "bg":        { "value": "#fef2f2", "tailwind": "red-50" },
+        "text":      { "value": "#b91c1c", "tailwind": "red-700" }
+      }
+    },
+    "neutral": {
+      "50":  { "value": "#f9fafb", "role": "page-bg" },
+      "100": { "value": "#f3f4f6", "role": "track-bg, disabled-option-bg" },
+      "200": { "value": "#e5e7eb", "role": "border-default" },
+      "300": { "value": "#d1d5db", "role": "text-locked-badge" },
+      "400": { "value": "#9ca3af", "role": "text-muted, timestamps" },
+      "500": { "value": "#6b7280", "role": "text-secondary, subtitles" },
+      "600": { "value": "#4b5563", "role": "text-dimmed-option" },
+      "700": { "value": "#374151", "role": "text-list-item" },
+      "900": { "value": "#111827", "role": "text-primary, headings" },
+      "white": { "value": "#ffffff", "role": "card-bg, sidebar-bg" }
+    }
+  },
+  "typography": {
+    "font": {
+      "sans": "'Inter', system-ui, sans-serif",
+      "mono": "'JetBrains Mono', monospace"
+    },
+    "scale": {
+      "badge":      { "size": "12px", "weight": "400-500", "font": "mono", "transform": "uppercase", "tracking": "0.05em" },
+      "meta":       { "size": "12px", "weight": "400",     "font": "mono" },
+      "body":       { "size": "14px", "weight": "400",     "font": "sans" },
+      "bodyMedium": { "size": "14px", "weight": "500",     "font": "sans" },
+      "label":      { "size": "14px", "weight": "500",     "font": "sans" },
+      "subtitle":   { "size": "14px", "weight": "400",     "font": "sans",  "color": "gray-500" },
+      "h2":         { "size": "16px", "weight": "500",     "font": "sans",  "color": "gray-900" },
+      "question":   { "size": "18px", "weight": "500",     "font": "sans",  "lineHeight": "1.625" },
+      "h1":         { "size": "24px", "weight": "600",     "font": "sans",  "color": "gray-900" },
+      "statSm":     { "size": "20px", "weight": "600",     "font": "mono",  "color": "gray-900" },
+      "statMd":     { "size": "30px", "weight": "600",     "font": "mono",  "color": "gray-900" },
+      "scoreHero":  { "size": "60px", "weight": "700",     "font": "mono",  "color": "gray-900" }
+    }
+  },
+  "spacing": {
+    "0.5": "2px",
+    "1":   "4px",
+    "1.5": "6px",
+    "2":   "8px",
+    "3":   "12px",
+    "4":   "16px",
+    "5":   "20px",
+    "6":   "24px",
+    "8":   "32px"
+  },
+  "radius": {
+    "badge":   "4px",
+    "button":  "8px",
+    "option":  "8px",
+    "navItem": "8px",
+    "card":    "12px",
+    "pill":    "9999px",
+    "bar":     "9999px"
+  },
+  "shadow": {
+    "card": "0 1px 2px rgba(0,0,0,0.05)",
+    "none": "none"
+  },
+  "layout": {
+    "sidebar": { "width": "240px", "position": "sticky" },
+    "content": { "maxWidth": "768px", "padding": "24px" },
+    "immersive": { "maxWidth": "672px", "padding": "24px" }
+  },
+  "motion": {
+    "pageEnter":  { "from": { "opacity": 0, "y": 16 }, "to": { "opacity": 1, "y": 0 }, "duration": 0.4, "ease": "easeOut" },
+    "cardEnter":  { "from": { "opacity": 0, "y": 16 }, "to": { "opacity": 1, "y": 0 }, "duration": 0.35, "ease": "easeOut" },
+    "listItem":   { "from": { "opacity": 0, "y": 12 }, "to": { "opacity": 1, "y": 0 }, "duration": 0.35, "ease": "easeOut" },
+    "stagger":    { "staggerChildren": 0.07 },
+    "badgePop":   { "from": { "opacity": 0, "scale": 0.88 }, "to": { "opacity": 1, "scale": 1 }, "duration": 0.25, "ease": "easeOut", "stagger": 0.06 },
+    "questionEnter": { "from": { "opacity": 0, "y": 12 }, "to": { "opacity": 1, "y": 0 }, "duration": 0.25, "ease": "easeOut" },
+    "questionExit":  { "to": { "opacity": 0, "y": -8 }, "duration": 0.25, "ease": "easeOut" },
+    "answerPanel": { "from": { "opacity": 0, "y": 12 }, "to": { "opacity": 1, "y": 0 }, "duration": 0.3, "ease": "easeOut" },
+    "historyRow": { "from": { "opacity": 0, "x": -8 }, "to": { "opacity": 1, "x": 0 }, "duration": 0.3, "ease": "easeOut", "delayPerItem": 0.05 },
+    "button":     { "hover": { "scale": 1.01 }, "tap": { "scale": 0.99 }, "duration": 0.15 },
+    "xpbar":      { "from": { "width": "0%" }, "to": { "width": "{pct}%" }, "duration": 0.8, "ease": "easeOut", "delay": 0.15 }
+  },
+  "component": {
+    "button": {
+      "base": "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed",
+      "variants": {
+        "primary":   "bg-indigo-500 text-white hover:bg-indigo-600",
+        "secondary": "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50",
+        "ghost":     "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
+      },
+      "sizes": {
+        "sm": "px-3 py-1.5 text-xs",
+        "md": "px-4 py-2 text-sm",
+        "lg": "px-6 py-3 text-base"
+      }
+    },
+    "card": {
+      "base": "bg-white border border-gray-200 rounded-xl shadow-sm",
+      "padding": {
+        "sm": "p-4",
+        "md": "p-5",
+        "lg": "p-6"
+      }
+    },
+    "xpbar": {
+      "track": "bg-gray-100 rounded-full h-1.5 overflow-hidden",
+      "fill":  "h-full bg-indigo-500 rounded-full"
+    },
+    "optionButton": {
+      "base": "w-full text-left p-4 rounded-lg border transition-all text-sm",
+      "states": {
+        "default":  "border-gray-200 text-gray-700",
+        "hover":    "border-indigo-300 bg-indigo-50 text-gray-700",
+        "correct":  "border-emerald-400 bg-emerald-50 text-emerald-800",
+        "wrong":    "border-red-400 bg-red-50 text-red-800",
+        "dimmed":   "border-gray-100 bg-gray-50 text-gray-400"
+      }
+    },
+    "navItem": {
+      "base":     "flex items-center px-3 py-2 rounded-lg text-sm transition-colors",
+      "inactive": "text-gray-500 hover:text-gray-900 hover:bg-gray-50",
+      "active":   "bg-indigo-50 text-indigo-600 font-medium"
+    },
+    "badge": {
+      "base":       "text-xs font-mono uppercase tracking-wide px-2 py-0.5 rounded",
+      "domain":     "bg-indigo-50 text-indigo-600",
+      "easy":       "bg-emerald-50 text-emerald-600",
+      "medium":     "bg-amber-50 text-amber-600",
+      "hard":       "bg-red-50 text-red-600",
+      "xpChip":     "text-xs font-mono bg-emerald-100 text-emerald-600 px-1.5 py-0.5 rounded",
+      "weakDomain": "text-xs bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded"
+    }
+  }
+}
