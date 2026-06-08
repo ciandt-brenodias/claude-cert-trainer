@@ -39,14 +39,15 @@ model Question {
 }
 
 model ExamSession {
-  id         String    @id @default(uuid())
-  userId     String
-  mode       ExamMode
-  domain     Domain?
-  startedAt  DateTime  @default(now())
-  finishedAt DateTime?
-  score      Int?
-  totalTime  Int?
+  id               String    @id @default(uuid())
+  userId           String
+  mode             ExamMode
+  domain           Domain?
+  startedAt        DateTime  @default(now())
+  finishedAt       DateTime?
+  score            Int?
+  totalTime        Int?
+  timeLimitMinutes Int?
 
   user    User         @relation(fields: [userId], references: [id])
   answers ExamAnswer[]
@@ -98,6 +99,13 @@ model UserBadge {
   badge Badge @relation(fields: [badgeId], references: [id])
 
   @@id([userId, badgeId])
+}
+
+model QuestionExplanation {
+  id          String   @id @default(uuid())
+  questionId  String   @unique
+  content     String
+  createdAt   DateTime @default(now())
 }
 
 model DailyGoal {
