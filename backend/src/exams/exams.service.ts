@@ -1,15 +1,17 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { QuestionsService } from '../questions/questions.service';
-import { Domain, ExamMode } from '@cert-trainer/shared';
+import { Difficulty, Domain, ExamMode } from '@cert-trainer/shared';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { SubmitAnswerDto } from './dto/submit-answer.dto';
+import { BadgeEarned, GamificationService } from '../gamification/gamification.service';
 
 @Injectable()
 export class ExamsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly questionsService: QuestionsService,
+    private readonly gamification: GamificationService,
   ) {}
 
   async create(userId: string, dto: CreateExamDto) {
@@ -45,13 +47,21 @@ export class ExamsService {
     if (!session) throw new NotFoundException(`Session ${sessionId} not found`);
     if (session.finishedAt) throw new BadRequestException('Session already finished');
 
-    const question = await this.prisma.question.findUnique({ where: { id: dto.questionId } });
+    const [question, user] = await Promise.all([
+      this.prisma.question.findUnique({ where: { id: dto.questionId } }),
+      this.prisma.user.findUnique({ where: { id: session.userId } }),
+    ]);
     if (!question) throw new NotFoundException(`Question ${dto.questionId} not found`);
+    if (!user) throw new NotFoundException(`User ${session.userId} not found`);
 
     const isCorrect = question.correctIndex === dto.userAnswer;
-    const xpGained = isCorrect ? 20 : 5;
+    const xpGained = this.gamification.calculateXp(
+      question.difficulty as Difficulty,
+      isCorrect,
+      user.currentStreak,
+    );
 
-    await this.prisma.$transaction([
+    const [, updatedProgress] = await this.prisma.$transaction([
       this.prisma.examAnswer.create({
         data: {
           sessionId,
@@ -82,8 +92,20 @@ export class ExamsService {
       }),
     ]);
 
+    const totalCorrectInDomain = updatedProgress.totalCorrect;
+    const allProgress = await this.prisma.domainProgress.findMany({ where: { userId: session.userId } });
+    const totalCorrectEver = allProgress.reduce((sum, p) => sum + p.totalCorrect, 0);
+
+    const badgesEarned: BadgeEarned[] = await this.gamification.evaluateBadges({
+      userId: session.userId,
+      domain: question.domain,
+      totalCorrectInDomain,
+      currentStreak: user.currentStreak,
+      totalCorrectEver,
+    });
+
     if (session.mode === ExamMode.FULL_EXAM) {
-      return { isCorrect: null, xpGained };
+      return { isCorrect: null, xpGained, badgesEarned };
     }
 
     return {
@@ -92,6 +114,7 @@ export class ExamsService {
       explanation: question.explanation,
       source: question.source,
       xpGained,
+      badgesEarned,
     };
   }
 

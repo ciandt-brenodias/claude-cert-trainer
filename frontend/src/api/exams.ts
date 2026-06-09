@@ -22,12 +22,19 @@ export interface SubmitAnswerDto {
   timeSpent: number;
 }
 
+export interface BadgeEarned {
+  slug: string;
+  name: string;
+  description: string;
+}
+
 export interface SubmitAnswerResponse {
   isCorrect: boolean | null;
   correctIndex?: number;
   explanation?: string;
   source?: string;
   xpGained: number;
+  badgesEarned: BadgeEarned[];
 }
 
 export interface DomainBreakdown {

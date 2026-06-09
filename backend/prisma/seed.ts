@@ -1,4 +1,4 @@
-import { PrismaClient, Domain, Difficulty } from '@prisma/client';
+import { PrismaClient, Domain, Difficulty, Prisma } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -158,7 +158,7 @@ const questions: Array<{
   },
 ];
 
-const badges = [
+const badges: Array<Prisma.BadgeCreateInput> = [
   {
     slug: 'first-correct',
     name: 'Primeira resposta',
@@ -166,16 +166,45 @@ const badges = [
     condition: { type: 'count', value: 1 },
   },
   {
-    slug: 'streak-7',
-    name: 'Streak 7 dias',
-    description: '7 dias consecutivos de estudo',
-    condition: { type: 'streak', value: 7 },
+    slug: 'streak-3',
+    name: 'Streak 3 dias',
+    description: '3 dias consecutivos de estudo',
+    condition: { type: 'streak', value: 3 },
   },
   {
-    slug: 'exam-passed',
-    name: 'Aprovado',
-    description: 'Score >= 70% em uma sessão',
-    condition: { type: 'accuracy', value: 70 },
+    slug: 'domain-agentic-bronze',
+    name: 'Arquiteto Iniciante',
+    description: '10 acertos em Agentic Architecture',
+    domain: Domain.AGENTIC_ARCHITECTURE,
+    condition: { type: 'accuracy', value: 10 },
+  },
+  {
+    slug: 'domain-tool-bronze',
+    name: 'Integrador Iniciante',
+    description: '10 acertos em Tool & MCP Integration',
+    domain: Domain.TOOL_MCP_INTEGRATION,
+    condition: { type: 'accuracy', value: 10 },
+  },
+  {
+    slug: 'domain-claude-code-bronze',
+    name: 'Dev Workflows Iniciante',
+    description: '10 acertos em Claude Code Workflows',
+    domain: Domain.CLAUDE_CODE_WORKFLOWS,
+    condition: { type: 'accuracy', value: 10 },
+  },
+  {
+    slug: 'domain-prompt-bronze',
+    name: 'Prompt Engineer Iniciante',
+    description: '10 acertos em Prompt Engineering',
+    domain: Domain.PROMPT_ENGINEERING,
+    condition: { type: 'accuracy', value: 10 },
+  },
+  {
+    slug: 'domain-context-bronze',
+    name: 'Gestor de Contexto Iniciante',
+    description: '10 acertos em Context Management',
+    domain: Domain.CONTEXT_MANAGEMENT,
+    condition: { type: 'accuracy', value: 10 },
   },
 ];
 

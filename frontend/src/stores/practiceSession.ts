@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { SafeQuestion } from '../api/questions';
-import type { ExamResult, SubmitAnswerResponse } from '../api/exams';
+import type { BadgeEarned, ExamResult, SubmitAnswerResponse } from '../api/exams';
 import type { Domain, ExamMode } from '@cert-trainer/shared';
 import { createExam, submitAnswer as apiSubmitAnswer, getExamResult } from '../api/exams';
 
@@ -23,14 +23,16 @@ interface PracticeSessionState {
   answers: AnswerRecord[];
   result: ExamResult | null;
   error: string | null;
+  pendingBadges: BadgeEarned[];
 
   startSession: (opts: { domain?: Domain; questionCount: 10 | 20 | 40 | 65; mode?: ExamMode; timeLimitMinutes?: number }) => Promise<void>;
   submitAnswer: (questionId: string, userAnswer: number, timeSpent: number) => Promise<SubmitAnswerResponse>;
+  clearPendingBadges: () => void;
   finish: () => Promise<void>;
   reset: () => void;
 }
 
-const INITIAL: Pick<PracticeSessionState, 'status' | 'sessionId' | 'mode' | 'timeLimitMinutes' | 'questions' | 'currentIdx' | 'answers' | 'result' | 'error'> = {
+const INITIAL: Pick<PracticeSessionState, 'status' | 'sessionId' | 'mode' | 'timeLimitMinutes' | 'questions' | 'currentIdx' | 'answers' | 'result' | 'error' | 'pendingBadges'> = {
   status: 'idle',
   sessionId: null,
   mode: null,
@@ -40,6 +42,7 @@ const INITIAL: Pick<PracticeSessionState, 'status' | 'sessionId' | 'mode' | 'tim
   answers: [],
   result: null,
   error: null,
+  pendingBadges: [],
 };
 
 export const usePracticeSession = create<PracticeSessionState>((set, get) => ({
@@ -74,9 +77,14 @@ export const usePracticeSession = create<PracticeSessionState>((set, get) => ({
       status: 'in_progress',
       answers: [...s.answers, { questionId, userAnswer, timeSpent, feedback }],
       currentIdx: s.currentIdx + 1,
+      pendingBadges: feedback.badgesEarned ?? [],
     }));
 
     return feedback;
+  },
+
+  clearPendingBadges() {
+    set({ pendingBadges: [] });
   },
 
   async finish() {

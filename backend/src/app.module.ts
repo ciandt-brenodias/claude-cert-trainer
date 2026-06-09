@@ -6,6 +6,7 @@ import { QuestionsModule } from './questions/questions.module';
 import { ExamsModule } from './exams/exams.module';
 import { UsersModule } from './users/users.module';
 import { ClaudeModule } from './claude/claude.module';
+import { GamificationModule } from './gamification/gamification.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ClaudeModule } from './claude/claude.module';
     ExamsModule,
     UsersModule,
     ClaudeModule,
+    GamificationModule,
   ],
 })
 export class AppModule {}

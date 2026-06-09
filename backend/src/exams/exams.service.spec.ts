@@ -3,6 +3,7 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ExamsService } from './exams.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { QuestionsService } from '../questions/questions.service';
+import { GamificationService } from '../gamification/gamification.service';
 import { Domain, Difficulty, ExamMode } from '@cert-trainer/shared';
 
 const mockQuestion = {
@@ -32,12 +33,15 @@ describe('ExamsService', () => {
   let prisma: {
     examSession: { create: jest.Mock; findUnique: jest.Mock; update: jest.Mock };
     examAnswer: { create: jest.Mock };
-    domainProgress: { upsert: jest.Mock };
-    user: { update: jest.Mock };
+    domainProgress: { upsert: jest.Mock; findMany: jest.Mock };
+    user: { findUnique: jest.Mock; update: jest.Mock };
     question: { findUnique: jest.Mock };
     $transaction: jest.Mock;
   };
   let questionsService: { findRandom: jest.Mock };
+  let gamification: { calculateXp: jest.Mock; evaluateBadges: jest.Mock };
+
+  const mockUser = { id: 'user-uuid-1', xp: 0, currentStreak: 0, longestStreak: 0 };
 
   beforeEach(async () => {
     prisma = {
@@ -50,18 +54,24 @@ describe('ExamsService', () => {
         create: jest.fn().mockReturnValue({}),
       },
       domainProgress: {
-        upsert: jest.fn().mockReturnValue({}),
+        upsert: jest.fn().mockReturnValue({ totalCorrect: 1 }),
+        findMany: jest.fn().mockResolvedValue([{ totalCorrect: 1 }]),
       },
       user: {
+        findUnique: jest.fn().mockResolvedValue(mockUser),
         update: jest.fn().mockReturnValue({}),
       },
       question: {
         findUnique: jest.fn().mockResolvedValue(mockQuestion),
       },
-      $transaction: jest.fn().mockResolvedValue([]),
+      $transaction: jest.fn().mockImplementation((ops) => Promise.resolve(ops.map(() => ({ totalCorrect: 1 })))),
     };
     questionsService = {
       findRandom: jest.fn().mockResolvedValue([mockQuestion]),
+    };
+    gamification = {
+      calculateXp: jest.fn().mockReturnValue(20),
+      evaluateBadges: jest.fn().mockResolvedValue([]),
     };
 
     const module = await Test.createTestingModule({
@@ -69,6 +79,7 @@ describe('ExamsService', () => {
         ExamsService,
         { provide: PrismaService, useValue: prisma },
         { provide: QuestionsService, useValue: questionsService },
+        { provide: GamificationService, useValue: gamification },
       ],
     }).compile();
 
@@ -119,7 +130,7 @@ describe('ExamsService', () => {
       prisma.examSession.findUnique.mockResolvedValue(mockSession);
     });
 
-    it('returns isCorrect true when userAnswer matches correctIndex', async () => {
+    it('returns isCorrect true and explanation when userAnswer matches correctIndex', async () => {
       const result = await service.submitAnswer('session-uuid-1', {
         questionId: 'q-uuid-1',
         userAnswer: 1,
@@ -131,7 +142,9 @@ describe('ExamsService', () => {
       expect(result.xpGained).toBe(20);
     });
 
-    it('returns isCorrect false and xpGained 5 when userAnswer does not match', async () => {
+    it('returns isCorrect false when userAnswer does not match', async () => {
+      gamification.calculateXp.mockReturnValue(2);
+
       const result = await service.submitAnswer('session-uuid-1', {
         questionId: 'q-uuid-1',
         userAnswer: 0,
@@ -139,7 +152,30 @@ describe('ExamsService', () => {
       });
 
       expect(result.isCorrect).toBe(false);
-      expect(result.xpGained).toBe(5);
+      expect(result.xpGained).toBe(2);
+    });
+
+    it('delegates XP calculation to GamificationService', async () => {
+      await service.submitAnswer('session-uuid-1', {
+        questionId: 'q-uuid-1',
+        userAnswer: 1,
+        timeSpent: 5000,
+      });
+
+      expect(gamification.calculateXp).toHaveBeenCalledWith(Difficulty.MEDIUM, true, 0);
+    });
+
+    it('calls evaluateBadges and includes badgesEarned in response', async () => {
+      const earned = [{ slug: 'first-correct', name: 'Primeira resposta', description: 'desc' }];
+      gamification.evaluateBadges.mockResolvedValue(earned);
+
+      const result = await service.submitAnswer('session-uuid-1', {
+        questionId: 'q-uuid-1',
+        userAnswer: 1,
+        timeSpent: 5000,
+      });
+
+      expect(result.badgesEarned).toEqual(earned);
     });
 
     it('runs DomainProgress upsert and User.xp update in transaction', async () => {
@@ -191,6 +227,7 @@ describe('ExamsService', () => {
       expect(result).not.toHaveProperty('explanation');
       expect(result.isCorrect).toBeNull();
       expect(result.xpGained).toBe(20);
+      expect(result.badgesEarned).toEqual([]);
     });
   });
 

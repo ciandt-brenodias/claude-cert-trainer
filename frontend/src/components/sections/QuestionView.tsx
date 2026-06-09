@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { usePracticeSession } from '../../stores/practiceSession';
 import { DomainBadge, DifficultyBadge } from '../ui/Badge';
 import { Button } from '../ui/Button';
+import { BadgeModal } from '../ui/BadgeModal';
 import { ErrorScreen } from '../ui/ErrorScreen';
 import type { SubmitAnswerResponse } from '../../api/exams';
 import { ExamMode } from '@cert-trainer/shared';
@@ -12,7 +13,7 @@ import { ExamMode } from '@cert-trainer/shared';
 export function QuestionView() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { status, mode, questions, currentIdx, submitAnswer, finish, reset } = usePracticeSession();
+  const { status, mode, questions, currentIdx, pendingBadges, clearPendingBadges, submitAnswer, finish, reset } = usePracticeSession();
 
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<SubmitAnswerResponse | null>(null);
@@ -74,6 +75,7 @@ export function QuestionView() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <BadgeModal badges={pendingBadges} onClose={clearPendingBadges} />
       <div className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto flex items-center gap-4">
           <Button variant="ghost" size="sm" onClick={() => { reset(); navigate('/practice'); }}>

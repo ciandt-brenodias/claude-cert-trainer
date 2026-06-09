@@ -24,11 +24,18 @@ const mockFeedback = {
   explanation: 'Because B.',
   source: 'anthropic',
   xpGained: 20,
+  badgesEarned: [],
+};
+
+const mockFeedbackWithBadge = {
+  ...mockFeedback,
+  badgesEarned: [{ slug: 'first-correct', name: 'Primeira resposta', description: 'desc' }],
 };
 
 const mockFullExamFeedback = {
   isCorrect: null,
   xpGained: 20,
+  badgesEarned: [],
 };
 
 const mockCreateResponse = {
@@ -128,6 +135,29 @@ describe('practiceSession store', () => {
 
     expect(usePracticeSession.getState().status).toBe('finished');
     expect(usePracticeSession.getState().result).toEqual(mockResult);
+  });
+
+  it('stores pendingBadges from submitAnswer response', async () => {
+    vi.mocked(createExam).mockResolvedValue({ ...mockCreateResponse, questions: [mockQuestion, mockQuestion] });
+    vi.mocked(apiSubmitAnswer).mockResolvedValue(mockFeedbackWithBadge);
+
+    await usePracticeSession.getState().startSession({ questionCount: 10 });
+    await usePracticeSession.getState().submitAnswer('q-1', 1, 5000);
+
+    const { pendingBadges } = usePracticeSession.getState();
+    expect(pendingBadges).toHaveLength(1);
+    expect(pendingBadges[0].slug).toBe('first-correct');
+  });
+
+  it('clears pendingBadges after clearPendingBadges()', async () => {
+    vi.mocked(createExam).mockResolvedValue({ ...mockCreateResponse, questions: [mockQuestion, mockQuestion] });
+    vi.mocked(apiSubmitAnswer).mockResolvedValue(mockFeedbackWithBadge);
+
+    await usePracticeSession.getState().startSession({ questionCount: 10 });
+    await usePracticeSession.getState().submitAnswer('q-1', 1, 5000);
+    usePracticeSession.getState().clearPendingBadges();
+
+    expect(usePracticeSession.getState().pendingBadges).toHaveLength(0);
   });
 
   it('resets to idle state', async () => {
