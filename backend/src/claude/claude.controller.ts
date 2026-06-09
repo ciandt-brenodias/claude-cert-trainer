@@ -2,6 +2,8 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { ClaudeService } from './claude.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ExplainQuestionDto } from './dto/explain-question.dto';
+import { GenerateQuestionsDto } from './dto/generate-questions.dto';
+import type { GeneratedQuestion } from './claude.service';
 
 @Controller('claude')
 export class ClaudeController {
@@ -36,5 +38,20 @@ export class ClaudeController {
     });
 
     return { explanation };
+  }
+
+  @Post('generate')
+  async generate(@Body() dto: GenerateQuestionsDto): Promise<{ generated: number; questions: Omit<GeneratedQuestion, 'source'>[] }> {
+    const generated = await this.claudeService.generateQuestions(dto);
+
+    if (generated.length === 0) {
+      return { generated: 0, questions: [] };
+    }
+
+    await this.prisma.question.createMany({
+      data: generated.map((q) => ({ ...q, source: 'generated', isApproved: false })),
+    });
+
+    return { generated: generated.length, questions: generated };
   }
 }
