@@ -8,7 +8,7 @@ export class QuestionsController {
 
   @Get()
   findAll(@Query() filter: QuestionFilterDto) {
-    return this.questionsService.findAll(filter.domain, filter.difficulty);
+    return this.questionsService.findAll(filter.domain, filter.difficulty, filter.language);
   }
 
   @Get(':id')

@@ -1,5 +1,5 @@
 import { IsEnum, IsIn, IsInt, IsOptional, Max, Min } from 'class-validator';
-import { Domain, ExamMode } from '@cert-trainer/shared';
+import { Domain, ExamMode, Language } from '@cert-trainer/shared';
 
 export class CreateExamDto {
   @IsOptional()
@@ -18,4 +18,8 @@ export class CreateExamDto {
   @Min(1)
   @Max(300)
   timeLimitMinutes?: number;
+
+  @IsOptional()
+  @IsEnum(Language)
+  language?: Language;
 }

@@ -4,7 +4,7 @@ import { ExamsService } from './exams.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { QuestionsService } from '../questions/questions.service';
 import { GamificationService } from '../gamification/gamification.service';
-import { Domain, Difficulty, ExamMode } from '@cert-trainer/shared';
+import { Domain, Difficulty, ExamMode, Language } from '@cert-trainer/shared';
 
 const mockQuestion = {
   id: 'q-uuid-1',
@@ -121,7 +121,17 @@ describe('ExamsService', () => {
     it('passes domain filter to questionsService.findRandom', async () => {
       await service.create('user-uuid-1', { questionCount: 10, domain: Domain.AGENTIC_ARCHITECTURE });
 
-      expect(questionsService.findRandom).toHaveBeenCalledWith(10, Domain.AGENTIC_ARCHITECTURE);
+      expect(questionsService.findRandom).toHaveBeenCalledWith(10, Domain.AGENTIC_ARCHITECTURE, Language.EN);
+    });
+
+    it('passes language to questionsService.findRandom, defaulting to EN', async () => {
+      await service.create('user-uuid-1', { questionCount: 10 });
+      expect(questionsService.findRandom).toHaveBeenCalledWith(10, undefined, Language.EN);
+    });
+
+    it('passes PT_BR language when specified', async () => {
+      await service.create('user-uuid-1', { questionCount: 10, language: Language.PT_BR });
+      expect(questionsService.findRandom).toHaveBeenCalledWith(10, undefined, Language.PT_BR);
     });
   });
 

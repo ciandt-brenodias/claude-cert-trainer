@@ -1,0 +1,95 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "practice": "Practice",
+    "review": "Review",
+    "profile": "Profile",
+    "ariaLabel": "Main navigation"
+  },
+  "sidebar": {
+    "level": "Level {{level}} · {{xp}} XP"
+  },
+  "dashboard": {
+    "loading": "Loading...",
+    "greeting": "Good morning, {{name}}",
+    "questionsToday": "questions today",
+    "overallAccuracy": "overall accuracy",
+    "domainProgress": "Progress by domain",
+    "practiceNow": "Practice now →",
+    "reviewErrors": "Review errors",
+    "errorProfile": "Error loading profile",
+    "errorProgress": "Error loading progress"
+  },
+  "practice": {
+    "heading": "Practice",
+    "subtitle": "Choose a domain to study",
+    "questionsLabel": "Questions:",
+    "questionsStat": "{{total}} questions · {{accuracy}}% accuracy",
+    "practiceBtn": "Practice →",
+    "examBadge": "EXAM",
+    "examTitle": "Full exam — 65 questions",
+    "examSubtitle": "All domains · feedback only at the end",
+    "timeLimit": "Time limit:",
+    "startBtn": "Start →",
+    "errorDomains": "Error loading domains"
+  },
+  "question": {
+    "exit": "✕ Exit",
+    "examBadge": "EXAM",
+    "correct": "✓ Correct!",
+    "incorrect": "✗ Incorrect",
+    "xpGained": "+{{xp}} XP",
+    "showExplanation": "Show explanation ✦",
+    "finish": "Finish",
+    "next": "Next →",
+    "errorSession": "Session error. Please try again."
+  },
+  "result": {
+    "heading": "Session complete",
+    "passed": "✓ Passed",
+    "failed": "✗ Not passed",
+    "correct": "correct",
+    "totalTime": "total time",
+    "xpGained": "gained",
+    "byDomain": "By domain",
+    "weakDomain": "weak point",
+    "wrongAnswers": "Wrong answers",
+    "reviewBtn": "Review errors ({{count}})",
+    "newSession": "New session"
+  },
+  "review": {
+    "heading": "Review",
+    "loading": "Loading...",
+    "count": "{{count}} questions to review",
+    "empty": "No questions to review.",
+    "emptySubtext": "Questions are removed after 2 consecutive correct answers.",
+    "backBtn": "Back to practice",
+    "errorLoad": "Error loading review"
+  },
+  "profile": {
+    "levelXp": "Level {{level}} · {{xp}}/{{ceiling}} XP",
+    "streak": "🔥 {{days}} consecutive days",
+    "badges": "Badges",
+    "noBadges": "No badges earned yet.",
+    "sessionsHistory": "Session history",
+    "modePractice": "Practice",
+    "modeExam": "Exam",
+    "noSessions": "No completed sessions.",
+    "errorProfile": "Error loading profile"
+  },
+  "badge": {
+    "singular": "Badge unlocked!",
+    "plural": "{{count}} badges unlocked!",
+    "continueBtn": "Continue"
+  },
+  "explain": {
+    "loading": "Consulting Claude...",
+    "close": "Close explanation",
+    "open": "Explain with Claude",
+    "error": "Error fetching explanation. Please try again."
+  },
+  "error": {
+    "defaultMessage": "Error loading data",
+    "retry": "Try again"
+  }
+}

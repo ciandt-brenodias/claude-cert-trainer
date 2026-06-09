@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import type { BadgeEarned } from '../../api/exams';
 import { Button } from './Button';
 
@@ -11,6 +12,7 @@ interface BadgeModalProps {
 }
 
 export function BadgeModal({ badges, onClose }: BadgeModalProps) {
+  const { t } = useTranslation();
   useEffect(() => {
     if (badges.length === 0) return;
     const timer = setTimeout(onClose, AUTO_CLOSE_MS);
@@ -37,7 +39,7 @@ export function BadgeModal({ badges, onClose }: BadgeModalProps) {
           >
             <div className="text-4xl mb-3">🏅</div>
             <h2 className="text-lg font-semibold text-gray-900 mb-1">
-              {badges.length === 1 ? 'Badge desbloqueado!' : `${badges.length} badges desbloqueados!`}
+              {badges.length === 1 ? t('badge.singular') : t('badge.plural', { count: badges.length })}
             </h2>
 
             <ul className="mt-4 space-y-2 text-left">
@@ -53,7 +55,7 @@ export function BadgeModal({ badges, onClose }: BadgeModalProps) {
             </ul>
 
             <Button variant="primary" size="sm" className="mt-5 w-full" onClick={onClose}>
-              Continuar
+              {t('badge.continueBtn')}
             </Button>
           </motion.div>
         </motion.div>

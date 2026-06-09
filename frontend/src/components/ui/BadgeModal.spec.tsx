@@ -26,14 +26,14 @@ describe('BadgeModal', () => {
   it('renders nothing when badges array is empty', () => {
     render(<BadgeModal badges={[]} onClose={vi.fn()} />);
 
-    expect(screen.queryByText('Badge desbloqueado!')).not.toBeInTheDocument();
+    expect(screen.queryByText('Badge unlocked!')).not.toBeInTheDocument();
   });
 
-  it('calls onClose when Continuar button is clicked', () => {
+  it('calls onClose when Continue button is clicked', () => {
     const onClose = vi.fn();
     render(<BadgeModal badges={badges} onClose={onClose} />);
 
-    fireEvent.click(screen.getByText('Continuar'));
+    fireEvent.click(screen.getByText('Continue'));
 
     expect(onClose).toHaveBeenCalledTimes(1);
   });
@@ -59,11 +59,11 @@ describe('BadgeModal', () => {
 
   it('shows plural label when multiple badges are earned', () => {
     const multi: BadgeEarned[] = [
-      { slug: 'first-correct', name: 'Primeira resposta', description: 'desc1' },
-      { slug: 'streak-3', name: 'Streak 3 dias', description: 'desc2' },
+      { slug: 'first-correct', name: 'First Correct', description: 'desc1' },
+      { slug: 'streak-3', name: '3-Day Streak', description: 'desc2' },
     ];
     render(<BadgeModal badges={multi} onClose={vi.fn()} />);
 
-    expect(screen.getByText('2 badges desbloqueados!')).toBeInTheDocument();
+    expect(screen.getByText('2 badges unlocked!')).toBeInTheDocument();
   });
 });

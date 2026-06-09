@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { QuestionsService } from '../questions/questions.service';
-import { Difficulty, Domain, ExamMode } from '@cert-trainer/shared';
+import { Difficulty, Domain, ExamMode, Language } from '@cert-trainer/shared';
 import { CreateExamDto } from './dto/create-exam.dto';
 import { SubmitAnswerDto } from './dto/submit-answer.dto';
 import { BadgeEarned, GamificationService } from '../gamification/gamification.service';
@@ -16,7 +16,7 @@ export class ExamsService {
 
   async create(userId: string, dto: CreateExamDto) {
     const mode = dto.mode ?? ExamMode.PRACTICE;
-    const questions = await this.questionsService.findRandom(dto.questionCount, dto.domain);
+    const questions = await this.questionsService.findRandom(dto.questionCount, dto.domain, dto.language ?? Language.EN);
 
     if (questions.length === 0) {
       throw new BadRequestException('No questions available for the given filters');

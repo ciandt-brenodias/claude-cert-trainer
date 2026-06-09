@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { SafeQuestion } from '../api/questions';
 import type { BadgeEarned, ExamResult, SubmitAnswerResponse } from '../api/exams';
-import type { Domain, ExamMode } from '@cert-trainer/shared';
+import type { Domain, ExamMode, Language } from '@cert-trainer/shared';
 import { createExam, submitAnswer as apiSubmitAnswer, getExamResult } from '../api/exams';
 
 type SessionStatus = 'idle' | 'loading' | 'in_progress' | 'submitting' | 'finished' | 'error';
@@ -25,7 +25,7 @@ interface PracticeSessionState {
   error: string | null;
   pendingBadges: BadgeEarned[];
 
-  startSession: (opts: { domain?: Domain; questionCount: 10 | 20 | 40 | 65; mode?: ExamMode; timeLimitMinutes?: number }) => Promise<void>;
+  startSession: (opts: { domain?: Domain; questionCount: 10 | 20 | 40 | 65; mode?: ExamMode; timeLimitMinutes?: number; language?: Language }) => Promise<void>;
   submitAnswer: (questionId: string, userAnswer: number, timeSpent: number) => Promise<SubmitAnswerResponse>;
   clearPendingBadges: () => void;
   finish: () => Promise<void>;
@@ -48,10 +48,10 @@ const INITIAL: Pick<PracticeSessionState, 'status' | 'sessionId' | 'mode' | 'tim
 export const usePracticeSession = create<PracticeSessionState>((set, get) => ({
   ...INITIAL,
 
-  async startSession({ domain, questionCount, mode, timeLimitMinutes }) {
+  async startSession({ domain, questionCount, mode, timeLimitMinutes, language }) {
     set({ status: 'loading', error: null });
     try {
-      const response = await createExam({ domain, questionCount, mode, timeLimitMinutes });
+      const response = await createExam({ domain, questionCount, mode, timeLimitMinutes, language });
       set({
         status: 'in_progress',
         sessionId: response.sessionId,
@@ -62,7 +62,7 @@ export const usePracticeSession = create<PracticeSessionState>((set, get) => ({
         answers: [],
       });
     } catch (err) {
-      set({ status: 'error', error: err instanceof Error ? err.message : 'Erro ao iniciar sessão' });
+      set({ status: 'error', error: err instanceof Error ? err.message : 'Error starting session' });
     }
   },
 
@@ -96,7 +96,7 @@ export const usePracticeSession = create<PracticeSessionState>((set, get) => ({
       const result = await getExamResult(sessionId);
       set({ status: 'finished', result });
     } catch (err) {
-      set({ status: 'error', error: err instanceof Error ? err.message : 'Erro ao finalizar sessão' });
+      set({ status: 'error', error: err instanceof Error ? err.message : 'Error finishing session' });
     }
   },
 

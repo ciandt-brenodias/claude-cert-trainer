@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Domain, Difficulty, ExamMode } from '@cert-trainer/shared';
+import { Domain, Difficulty, ExamMode, Language } from '@cert-trainer/shared';
 import { usePracticeSession } from './practiceSession';
 
 vi.mock('../api/exams', () => ({
@@ -158,6 +158,15 @@ describe('practiceSession store', () => {
     usePracticeSession.getState().clearPendingBadges();
 
     expect(usePracticeSession.getState().pendingBadges).toHaveLength(0);
+  });
+
+  it('passes language to createExam when specified', async () => {
+    vi.mocked(createExam).mockResolvedValue({ ...mockCreateResponse, questions: [mockQuestion] });
+    vi.mocked(apiSubmitAnswer).mockResolvedValue(mockFeedback);
+
+    await usePracticeSession.getState().startSession({ questionCount: 10, language: Language.PT_BR });
+
+    expect(createExam).toHaveBeenCalledWith(expect.objectContaining({ language: Language.PT_BR }));
   });
 
   it('resets to idle state', async () => {

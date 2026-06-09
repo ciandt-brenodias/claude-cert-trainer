@@ -2,7 +2,7 @@ import { Test } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { QuestionsService } from './questions.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { Domain, Difficulty } from '@cert-trainer/shared';
+import { Domain, Difficulty, Language } from '@cert-trainer/shared';
 
 const mockQuestion = {
   id: 'q-uuid-1',
@@ -77,6 +77,16 @@ describe('QuestionsService', () => {
       );
     });
 
+    it('applies language filter when provided', async () => {
+      await service.findAll(undefined, undefined, Language.EN);
+
+      expect(prisma.question.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ language: Language.EN }),
+        }),
+      );
+    });
+
     it('always filters by isApproved true', async () => {
       await service.findAll();
 
@@ -118,6 +128,16 @@ describe('QuestionsService', () => {
       const result = await service.findRandom(10);
 
       expect(result).toEqual([]);
+    });
+
+    it('applies language filter when provided', async () => {
+      await service.findRandom(10, undefined, Language.PT_BR);
+
+      expect(prisma.question.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ language: Language.PT_BR }),
+        }),
+      );
     });
   });
 });

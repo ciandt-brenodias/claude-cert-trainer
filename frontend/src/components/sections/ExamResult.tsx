@@ -1,27 +1,25 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { usePracticeSession } from '../../stores/practiceSession';
+import { useLanguage } from '../../stores/language';
 import { AppShell } from '../layout/AppShell';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { XPBar } from '../ui/XPBar';
 import { ExplainButton } from '../ui/ExplainButton';
+import { DOMAIN_LABELS, Language } from '@cert-trainer/shared';
 import type { Domain } from '@cert-trainer/shared';
-
-const DOMAIN_LABELS: Record<Domain, string> = {
-  AGENTIC_ARCHITECTURE: 'Agentic Architecture',
-  TOOL_MCP_INTEGRATION: 'Tool & MCP Integration',
-  CLAUDE_CODE_WORKFLOWS: 'Claude Code Workflows',
-  PROMPT_ENGINEERING: 'Prompt Engineering',
-  CONTEXT_MANAGEMENT: 'Context Management',
-};
 
 const staggerContainer = { hidden: {}, visible: { transition: { staggerChildren: 0.07 } } };
 const fadeUp = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } } };
 
 export function ExamResult() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { lang } = useLanguage();
+  const langKey = lang === 'pt-BR' ? Language.PT_BR : Language.EN;
   const { result, status, reset } = usePracticeSession();
 
   useEffect(() => {
@@ -43,19 +41,19 @@ export function ExamResult() {
         transition={{ duration: 0.4, ease: 'easeOut' }}
         className="text-center py-6"
       >
-        <p className="text-sm text-gray-500 mb-2">Sessão concluída</p>
+        <p className="text-sm text-gray-500 mb-2">{t('result.heading')}</p>
         <p className="text-6xl font-bold font-mono text-gray-900">{score}</p>
         <p className="text-gray-400 font-mono mt-1">/ 100</p>
         <div className={`inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-full text-sm font-medium ${passed ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
-          {passed ? '✓ Aprovado' : '✗ Não aprovado'}
+          {passed ? t('result.passed') : t('result.failed')}
         </div>
       </motion.div>
 
       <div className="grid grid-cols-3 gap-4 mt-2">
         {[
-          { value: `${totalCorrect}/${totalAnswered}`, label: 'corretas' },
-          { value: `~${totalTime}s`, label: 'tempo total' },
-          { value: `+${xpEarned} XP`, label: 'ganhos' },
+          { value: `${totalCorrect}/${totalAnswered}`, label: t('result.correct') },
+          { value: `~${totalTime}s`, label: t('result.totalTime') },
+          { value: `+${xpEarned} XP`, label: t('result.xpGained') },
         ].map(({ value, label }, i) => (
           <motion.div key={label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 + i * 0.07 }}>
             <Card className="p-4 text-center">
@@ -67,15 +65,15 @@ export function ExamResult() {
       </div>
 
       <div className="mt-8">
-        <h2 className="text-base font-medium text-gray-900 mb-4">Por domínio</h2>
+        <h2 className="text-base font-medium text-gray-900 mb-4">{t('result.byDomain')}</h2>
         <motion.ul variants={staggerContainer} initial="hidden" animate="visible" className="space-y-3">
           {byDomain.map((d) => (
             <motion.li key={d.domain} variants={fadeUp}>
               <Card className="p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-700">{DOMAIN_LABELS[d.domain as Domain]}</span>
-                    {d.pct < 60 && <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">ponto fraco</span>}
+                    <span className="text-sm text-gray-700">{DOMAIN_LABELS[langKey][d.domain as Domain]}</span>
+                    {d.pct < 60 && <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">{t('result.weakDomain')}</span>}
                   </div>
                   <span className="text-sm font-mono text-gray-400">{d.pct}%</span>
                 </div>
@@ -88,7 +86,7 @@ export function ExamResult() {
 
       {wrongAnswers.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-base font-medium text-gray-900 mb-4">Questões erradas</h2>
+          <h2 className="text-base font-medium text-gray-900 mb-4">{t('result.wrongAnswers')}</h2>
           <motion.ul variants={staggerContainer} initial="hidden" animate="visible" className="space-y-3">
             {wrongAnswers.map((w) => (
               <motion.li key={w.questionId} variants={fadeUp}>
@@ -112,10 +110,10 @@ export function ExamResult() {
       <div className="flex gap-3 mt-8">
         {wrongAnswers.length > 0 && (
           <Button variant="secondary" onClick={() => navigate('/review')}>
-            Revisar erros ({wrongAnswers.length})
+            {t('result.reviewBtn', { count: wrongAnswers.length })}
           </Button>
         )}
-        <Button onClick={() => { reset(); navigate('/practice'); }}>Nova sessão</Button>
+        <Button onClick={() => { reset(); navigate('/practice'); }}>{t('result.newSession')}</Button>
       </div>
     </AppShell>
   );

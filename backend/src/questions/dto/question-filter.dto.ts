@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional } from 'class-validator';
-import { Domain, Difficulty } from '@cert-trainer/shared';
+import { Domain, Difficulty, Language } from '@cert-trainer/shared';
 
 export class QuestionFilterDto {
   @IsOptional()
@@ -9,4 +9,8 @@ export class QuestionFilterDto {
   @IsOptional()
   @IsEnum(Difficulty)
   difficulty?: Difficulty;
+
+  @IsOptional()
+  @IsEnum(Language)
+  language?: Language;
 }

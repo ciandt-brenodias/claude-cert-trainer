@@ -1,5 +1,5 @@
 import { apiGet, apiPost } from './client';
-import type { Domain, ExamMode } from '@cert-trainer/shared';
+import type { Domain, ExamMode, Language } from '@cert-trainer/shared';
 import type { SafeQuestion } from './questions';
 
 export interface CreateExamDto {
@@ -7,6 +7,7 @@ export interface CreateExamDto {
   questionCount: 10 | 20 | 40 | 65;
   mode?: ExamMode;
   timeLimitMinutes?: number;
+  language?: Language;
 }
 
 export interface CreateExamResponse {

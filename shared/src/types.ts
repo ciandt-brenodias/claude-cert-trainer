@@ -18,6 +18,28 @@ export enum ExamMode {
   REVIEW    = 'REVIEW',
 }
 
+export enum Language {
+  EN    = 'EN',
+  PT_BR = 'PT_BR',
+}
+
+export const DOMAIN_LABELS: Record<Language, Record<Domain, string>> = {
+  [Language.EN]: {
+    [Domain.AGENTIC_ARCHITECTURE]: 'Agentic Architecture',
+    [Domain.TOOL_MCP_INTEGRATION]: 'Tool & MCP Integration',
+    [Domain.CLAUDE_CODE_WORKFLOWS]: 'Claude Code Workflows',
+    [Domain.PROMPT_ENGINEERING]: 'Prompt Engineering',
+    [Domain.CONTEXT_MANAGEMENT]: 'Context Management',
+  },
+  [Language.PT_BR]: {
+    [Domain.AGENTIC_ARCHITECTURE]: 'Arquitetura Agêntica',
+    [Domain.TOOL_MCP_INTEGRATION]: 'Tool & MCP Integration',
+    [Domain.CLAUDE_CODE_WORKFLOWS]: 'Workflows Claude Code',
+    [Domain.PROMPT_ENGINEERING]: 'Engenharia de Prompt',
+    [Domain.CONTEXT_MANAGEMENT]: 'Gerenciamento de Contexto',
+  },
+};
+
 export interface UserProfile {
   uuid: string;
   name: string;
@@ -39,6 +61,7 @@ export interface Question {
   id: string;
   domain: Domain;
   difficulty: Difficulty;
+  language: Language;
   text: string;
   options: string[];
   correctIndex: number;
@@ -53,6 +76,7 @@ export interface Badge {
   name: string;
   description: string;
   domain?: Domain;
+  language?: Language;
   condition: BadgeCondition;
 }
 

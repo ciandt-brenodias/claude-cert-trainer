@@ -32,6 +32,7 @@ model Question {
   explanation  String
   source       String
   difficulty   Difficulty @default(MEDIUM)
+  language     Language   @default(PT_BR)
   isApproved   Boolean    @default(true)
   createdAt    DateTime   @default(now())
 
@@ -80,11 +81,12 @@ model DomainProgress {
 }
 
 model Badge {
-  id          String  @id @default(uuid())
-  slug        String  @unique
+  id          String   @id @default(uuid())
+  slug        String   @unique
   name        String
   description String
   domain      Domain?
+  language    Language @default(PT_BR)
   condition   Json
 
   userBadges UserBadge[]
@@ -138,4 +140,9 @@ enum ExamMode {
   PRACTICE
   FULL_EXAM
   REVIEW
+}
+
+enum Language {
+  EN
+  PT_BR
 }

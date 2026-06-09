@@ -1,0 +1,95 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "practice": "Praticar",
+    "review": "Revisar",
+    "profile": "Perfil",
+    "ariaLabel": "Navegação principal"
+  },
+  "sidebar": {
+    "level": "Nível {{level}} · {{xp}} XP"
+  },
+  "dashboard": {
+    "loading": "Carregando...",
+    "greeting": "Bom dia, {{name}}",
+    "questionsToday": "questões hoje",
+    "overallAccuracy": "precisão geral",
+    "domainProgress": "Progresso por domínio",
+    "practiceNow": "Praticar agora →",
+    "reviewErrors": "Revisar erros",
+    "errorProfile": "Erro ao carregar perfil",
+    "errorProgress": "Erro ao carregar progresso"
+  },
+  "practice": {
+    "heading": "Praticar",
+    "subtitle": "Escolha um domínio para estudar",
+    "questionsLabel": "Questões:",
+    "questionsStat": "{{total}} questões · {{accuracy}}% precisão",
+    "practiceBtn": "Praticar →",
+    "examBadge": "SIMULADO",
+    "examTitle": "Exame completo — 65 questões",
+    "examSubtitle": "Todos os domínios · feedback só no final",
+    "timeLimit": "Tempo limite:",
+    "startBtn": "Iniciar →",
+    "errorDomains": "Erro ao carregar domínios"
+  },
+  "question": {
+    "exit": "✕ Sair",
+    "examBadge": "SIMULADO",
+    "correct": "✓ Correto!",
+    "incorrect": "✗ Incorreto",
+    "xpGained": "+{{xp}} XP",
+    "showExplanation": "Ver explicação ✦",
+    "finish": "Finalizar",
+    "next": "Próxima →",
+    "errorSession": "Erro na sessão. Tente novamente."
+  },
+  "result": {
+    "heading": "Sessão concluída",
+    "passed": "✓ Aprovado",
+    "failed": "✗ Não aprovado",
+    "correct": "corretas",
+    "totalTime": "tempo total",
+    "xpGained": "ganhos",
+    "byDomain": "Por domínio",
+    "weakDomain": "ponto fraco",
+    "wrongAnswers": "Questões erradas",
+    "reviewBtn": "Revisar erros ({{count}})",
+    "newSession": "Nova sessão"
+  },
+  "review": {
+    "heading": "Revisar",
+    "loading": "Carregando...",
+    "count": "{{count}} questões para revisar",
+    "empty": "Nenhuma questão para revisar.",
+    "emptySubtext": "Questões são removidas após 2 acertos consecutivos.",
+    "backBtn": "Voltar a praticar",
+    "errorLoad": "Erro ao carregar revisão"
+  },
+  "profile": {
+    "levelXp": "Nível {{level}} · {{xp}}/{{ceiling}} XP",
+    "streak": "🔥 {{days}} dias consecutivos",
+    "badges": "Badges",
+    "noBadges": "Nenhum badge conquistado ainda.",
+    "sessionsHistory": "Histórico de sessões",
+    "modePractice": "Prática",
+    "modeExam": "Simulado",
+    "noSessions": "Nenhuma sessão finalizada.",
+    "errorProfile": "Erro ao carregar perfil"
+  },
+  "badge": {
+    "singular": "Badge desbloqueado!",
+    "plural": "{{count}} badges desbloqueados!",
+    "continueBtn": "Continuar"
+  },
+  "explain": {
+    "loading": "Consultando Claude...",
+    "close": "Fechar explicação",
+    "open": "Explicar com Claude",
+    "error": "Erro ao buscar explicação. Tente novamente."
+  },
+  "error": {
+    "defaultMessage": "Erro ao carregar dados",
+    "retry": "Tentar novamente"
+  }
+}

@@ -1,21 +1,16 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useWrongAnswers } from '../../hooks/useWrongAnswers';
+import { useLanguage } from '../../stores/language';
 import { AppShell } from '../layout/AppShell';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { ErrorScreen } from '../ui/ErrorScreen';
 import { SkeletonRow } from '../ui/Skeleton';
 import { ExplainButton } from '../ui/ExplainButton';
+import { DOMAIN_LABELS, Language } from '@cert-trainer/shared';
 import type { Domain } from '@cert-trainer/shared';
-
-const DOMAIN_LABELS: Record<Domain, string> = {
-  AGENTIC_ARCHITECTURE: 'Agentic Architecture',
-  TOOL_MCP_INTEGRATION: 'Tool & MCP Integration',
-  CLAUDE_CODE_WORKFLOWS: 'Claude Code Workflows',
-  PROMPT_ENGINEERING: 'Prompt Engineering',
-  CONTEXT_MANAGEMENT: 'Context Management',
-};
 
 const DIFFICULTY_CLASSES: Record<string, string> = {
   EASY: 'bg-emerald-50 text-emerald-600',
@@ -28,16 +23,19 @@ const fadeUp = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, tra
 
 export function Review() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { lang } = useLanguage();
+  const langKey = lang === 'pt-BR' ? Language.PT_BR : Language.EN;
   const { data: wrongAnswers, isLoading, error, refetch } = useWrongAnswers();
 
-  if (error) return <AppShell><ErrorScreen message="Erro ao carregar revisão" onRetry={refetch} /></AppShell>;
+  if (error) return <AppShell><ErrorScreen message={t('review.errorLoad')} onRetry={refetch} /></AppShell>;
 
   return (
     <AppShell>
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: 'easeOut' }}>
-        <h1 className="text-2xl font-semibold text-gray-900">Revisar</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">{t('review.heading')}</h1>
         <p className="text-sm text-gray-500 mt-1">
-          {isLoading ? 'Carregando...' : `${wrongAnswers?.length ?? 0} questões para revisar`}
+          {isLoading ? t('review.loading') : t('review.count', { count: wrongAnswers?.length ?? 0 })}
         </p>
       </motion.div>
 
@@ -47,8 +45,8 @@ export function Review() {
         </div>
       ) : wrongAnswers?.length === 0 ? (
         <div className="mt-16 text-center">
-          <p className="text-sm text-gray-500">Nenhuma questão para revisar.</p>
-          <p className="text-xs text-gray-400 mt-1">Questões são removidas após 2 acertos consecutivos.</p>
+          <p className="text-sm text-gray-500">{t('review.empty')}</p>
+          <p className="text-xs text-gray-400 mt-1">{t('review.emptySubtext')}</p>
         </div>
       ) : (
         <motion.ul variants={staggerContainer} initial="hidden" animate="visible" className="mt-8 space-y-3">
@@ -57,7 +55,7 @@ export function Review() {
               <Card className="p-5">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-xs font-mono uppercase tracking-wide bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded">
-                    {(DOMAIN_LABELS[q.domain as Domain] ?? q.domain).split(' ')[0]}
+                    {(DOMAIN_LABELS[langKey][q.domain as Domain] ?? q.domain).split(' ')[0]}
                   </span>
                   <span className={`text-xs font-mono uppercase tracking-wide px-2 py-0.5 rounded ${DIFFICULTY_CLASSES[q.difficulty] ?? ''}`}>
                     {q.difficulty}
@@ -80,7 +78,7 @@ export function Review() {
 
       <div className="mt-8">
         <Button variant="secondary" onClick={() => navigate('/practice')}>
-          Voltar a praticar
+          {t('review.backBtn')}
         </Button>
       </div>
     </AppShell>

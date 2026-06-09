@@ -1,17 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Domain, Difficulty } from '@cert-trainer/shared';
+import { Domain, Difficulty, Language } from '@cert-trainer/shared';
 
 @Injectable()
 export class QuestionsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(domain?: Domain, difficulty?: Difficulty) {
+  async findAll(domain?: Domain, difficulty?: Difficulty, language?: Language) {
     const questions = await this.prisma.question.findMany({
       where: {
         isApproved: true,
         ...(domain && { domain }),
         ...(difficulty && { difficulty }),
+        ...(language && { language }),
       },
       select: {
         id: true,
@@ -45,11 +46,12 @@ export class QuestionsService {
     };
   }
 
-  async findRandom(count: number, domain?: Domain): Promise<{ id: string; domain: Domain; difficulty: Difficulty; text: string; options: string[] }[]> {
+  async findRandom(count: number, domain?: Domain, language?: Language): Promise<{ id: string; domain: Domain; difficulty: Difficulty; text: string; options: string[] }[]> {
     const available = await this.prisma.question.findMany({
       where: {
         isApproved: true,
         ...(domain && { domain }),
+        ...(language && { language }),
       },
       select: {
         id: true,

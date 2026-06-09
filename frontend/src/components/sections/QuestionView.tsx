@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { usePracticeSession } from '../../stores/practiceSession';
 import { DomainBadge, DifficultyBadge } from '../ui/Badge';
 import { Button } from '../ui/Button';
@@ -13,6 +14,7 @@ import { ExamMode } from '@cert-trainer/shared';
 export function QuestionView() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   const { status, mode, questions, currentIdx, pendingBadges, clearPendingBadges, submitAnswer, finish, reset } = usePracticeSession();
 
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -40,7 +42,7 @@ export function QuestionView() {
     setStartTime(Date.now());
   }, [currentIdx]);
 
-  if (status === 'error') return <ErrorScreen message="Erro na sessão. Tente novamente." onRetry={() => { reset(); navigate('/practice'); }} />;
+  if (status === 'error') return <ErrorScreen message={t('question.errorSession')} onRetry={() => { reset(); navigate('/practice'); }} />;
   if (!questions.length) return null;
 
   const question = questions[currentIdx];
@@ -79,13 +81,13 @@ export function QuestionView() {
       <div className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto flex items-center gap-4">
           <Button variant="ghost" size="sm" onClick={() => { reset(); navigate('/practice'); }}>
-            ✕ Sair
+            {t('question.exit')}
           </Button>
           <div className="flex-1">
             <div className="flex justify-between mb-1">
               <span className="text-xs text-gray-400 font-mono">{current} / {total}</span>
               {isFullExam && (
-                <span className="text-xs font-mono text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">SIMULADO</span>
+                <span className="text-xs font-mono text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">{t('question.examBadge')}</span>
               )}
             </div>
             <div className="bg-gray-100 rounded-full h-1.5 overflow-hidden">
@@ -146,10 +148,10 @@ export function QuestionView() {
                   {!isFullExam && (
                     <div className={`p-4 rounded-lg border ${feedback.isCorrect ? 'border-emerald-200 bg-emerald-50' : 'border-red-200 bg-red-50'}`}>
                       <p className={`text-sm font-medium ${feedback.isCorrect ? 'text-emerald-700' : 'text-red-700'}`}>
-                        {feedback.isCorrect ? '✓ Correto!' : '✗ Incorreto'}
+                        {feedback.isCorrect ? t('question.correct') : t('question.incorrect')}
                         {feedback.isCorrect && (
                           <span className="ml-2 text-xs font-mono bg-emerald-100 text-emerald-600 px-1.5 py-0.5 rounded">
-                            +{feedback.xpGained} XP
+                            {t('question.xpGained', { xp: feedback.xpGained })}
                           </span>
                         )}
                       </p>
@@ -161,7 +163,7 @@ export function QuestionView() {
                           onClick={() => setShowExplanation(true)}
                           className="text-sm text-indigo-600 hover:text-indigo-700 mt-2 flex items-center gap-1 transition-colors"
                         >
-                          Ver explicação ✦
+                          {t('question.showExplanation')}
                         </button>
                       )}
                     </div>
@@ -169,7 +171,7 @@ export function QuestionView() {
 
                   <div className="flex justify-end mt-4">
                     <Button onClick={handleNext} disabled={status === 'loading' || status === 'submitting'}>
-                      {isLastQuestion ? 'Finalizar' : 'Próxima →'}
+                      {isLastQuestion ? t('question.finish') : t('question.next')}
                     </Button>
                   </div>
                 </motion.div>

@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { PrismaClient } from '@prisma/client';
-import { Domain, Difficulty } from '@cert-trainer/shared';
+import { Domain, Difficulty, Language } from '@cert-trainer/shared';
 import type { Tool, ToolUseBlock } from '@anthropic-ai/sdk/resources/messages';
 
 const GENERATE_SYSTEM_PROMPT = `You are an expert question author for the CCA-F (Claude Certified Associate Fundamentals) certification exam.
@@ -28,12 +28,13 @@ const GENERATE_TOOL: Tool = {
           properties: {
             domain: { type: 'string', enum: Object.values(Domain) },
             difficulty: { type: 'string', enum: Object.values(Difficulty) },
+            language: { type: 'string', enum: Object.values(Language) },
             text: { type: 'string' },
             options: { type: 'array', items: { type: 'string' }, minItems: 4, maxItems: 4 },
             correctIndex: { type: 'number', minimum: 0, maximum: 3 },
             explanation: { type: 'string' },
           },
-          required: ['domain', 'difficulty', 'text', 'options', 'correctIndex', 'explanation'],
+          required: ['domain', 'difficulty', 'language', 'text', 'options', 'correctIndex', 'explanation'],
         },
       },
     },
@@ -51,6 +52,8 @@ function parseArgs() {
   const count = parseInt(get('--count') ?? '5', 10);
   const domain = get('--domain') as Domain | undefined;
   const difficulty = get('--difficulty') as Difficulty | undefined;
+  const langArg = get('--lang');
+  const language: Language = langArg === 'pt-BR' ? Language.PT_BR : Language.EN;
 
   if (isNaN(count) || count < 1 || count > 20) {
     console.error('--count must be between 1 and 20');
@@ -64,12 +67,16 @@ function parseArgs() {
     console.error(`--difficulty must be one of: ${Object.values(Difficulty).join(', ')}`);
     process.exit(1);
   }
+  if (langArg && langArg !== 'en' && langArg !== 'pt-BR') {
+    console.error('--lang must be "en" or "pt-BR"');
+    process.exit(1);
+  }
 
-  return { count, domain, difficulty };
+  return { count, domain, difficulty, language };
 }
 
 async function main() {
-  const { count, domain, difficulty } = parseArgs();
+  const { count, domain, difficulty, language } = parseArgs();
 
   const client = new Anthropic({
     apiKey: process.env.ANTHROPIC_AUTH_TOKEN,
@@ -84,9 +91,12 @@ async function main() {
   const difficultyClause = difficulty
     ? `Difficulty: ${difficulty}`
     : 'Mix difficulties: approximately 30% EASY, 50% MEDIUM, 20% HARD';
+  const languageClause = language === Language.PT_BR
+    ? 'Language: Generate all questions and explanations in Brazilian Portuguese (pt-BR).'
+    : 'Language: Generate all questions and explanations in English.';
 
   console.log(`Generating ${count} question(s)...`);
-  console.log(`  domain: ${domain ?? 'all'}, difficulty: ${difficulty ?? 'mixed'}`);
+  console.log(`  domain: ${domain ?? 'all'}, difficulty: ${difficulty ?? 'mixed'}, lang: ${language}`);
 
   const response = await client.messages.create({
     model,
@@ -107,6 +117,8 @@ async function main() {
         content: `Generate exactly ${count} CCA-F multiple-choice question(s).
 ${domainClause}
 ${difficultyClause}
+${languageClause}
+Set the "language" field to "${language}" for every question.
 
 Use the create_questions tool to return the structured output.`,
       },
@@ -119,7 +131,7 @@ Use the create_questions tool to return the structured output.`,
     process.exit(1);
   }
 
-  const questions = (toolBlock.input as { questions: Array<{ domain: string; difficulty: string; text: string; options: string[]; correctIndex: number; explanation: string }> }).questions ?? [];
+  const questions = (toolBlock.input as { questions: Array<{ domain: string; difficulty: string; language: string; text: string; options: string[]; correctIndex: number; explanation: string }> }).questions ?? [];
 
   if (questions.length === 0) {
     console.error('No questions generated');
@@ -131,6 +143,7 @@ Use the create_questions tool to return the structured output.`,
       ...q,
       domain: q.domain as Domain,
       difficulty: q.difficulty as Difficulty,
+      language: (q.language as Language) ?? language,
       source: 'generated',
       isApproved: false,
     })),

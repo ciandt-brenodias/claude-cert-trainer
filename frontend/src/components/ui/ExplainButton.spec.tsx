@@ -22,14 +22,14 @@ describe('ExplainButton', () => {
   it('renders the explain button', () => {
     render(<ExplainButton questionId="q-1" userAnswer={0} />, { wrapper });
 
-    expect(screen.getByText('Explicar com Claude')).toBeInTheDocument();
+    expect(screen.getByText('Explain with Claude')).toBeInTheDocument();
   });
 
   it('calls explainQuestion API on first click', async () => {
     vi.mocked(explainQuestion).mockResolvedValue({ explanation: 'A is correct because...' });
 
     render(<ExplainButton questionId="q-1" userAnswer={0} />, { wrapper });
-    fireEvent.click(screen.getByText('Explicar com Claude'));
+    fireEvent.click(screen.getByText('Explain with Claude'));
 
     await waitFor(() => {
       expect(explainQuestion).toHaveBeenCalledWith(
@@ -43,7 +43,7 @@ describe('ExplainButton', () => {
     vi.mocked(explainQuestion).mockResolvedValue({ explanation: 'A is correct because...' });
 
     render(<ExplainButton questionId="q-1" userAnswer={0} />, { wrapper });
-    fireEvent.click(screen.getByText('Explicar com Claude'));
+    fireEvent.click(screen.getByText('Explain with Claude'));
 
     await waitFor(() => {
       expect(screen.getByText('A is correct because...')).toBeInTheDocument();
@@ -54,10 +54,10 @@ describe('ExplainButton', () => {
     vi.mocked(explainQuestion).mockResolvedValue({ explanation: 'A is correct because...' });
 
     render(<ExplainButton questionId="q-1" userAnswer={0} />, { wrapper });
-    fireEvent.click(screen.getByText('Explicar com Claude'));
+    fireEvent.click(screen.getByText('Explain with Claude'));
 
-    await waitFor(() => screen.getByText('Fechar explicação'));
-    fireEvent.click(screen.getByText('Fechar explicação'));
+    await waitFor(() => screen.getByText('Close explanation'));
+    fireEvent.click(screen.getByText('Close explanation'));
 
     expect(explainQuestion).toHaveBeenCalledTimes(1);
   });
