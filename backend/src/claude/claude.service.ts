@@ -121,7 +121,7 @@ Use the create_questions tool to return the structured output.`;
 
     const response = await this.client.messages.create({
       model: this.model,
-      max_tokens: 4096,
+      max_tokens: Math.min(512 * input.count + 1024, 8192),
       system: [
         {
           type: 'text',

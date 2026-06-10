@@ -44,7 +44,7 @@ services:
       # --- CI&T LLM proxy credentials — set in .env (gitignored) ---
       ANTHROPIC_AUTH_TOKEN: ${ANTHROPIC_AUTH_TOKEN}
       ANTHROPIC_BASE_URL: https://flow.ciandt.com/flow-llm-proxy/
-      ANTHROPIC_MODEL: claude-haiku-4-5-20251001
+      ANTHROPIC_MODEL: anthropic.claude-4-5-haiku
     depends_on:
       postgres:
         condition: service_healthy

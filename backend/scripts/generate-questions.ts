@@ -45,6 +45,8 @@ const GENERATE_TOOL: Tool = {
 function parseArgs() {
   const args = process.argv.slice(2);
   const get = (flag: string) => {
+    const eqEntry = args.find((a) => a.startsWith(`${flag}=`));
+    if (eqEntry) return eqEntry.slice(flag.length + 1);
     const idx = args.indexOf(flag);
     return idx !== -1 ? args[idx + 1] : undefined;
   };
@@ -82,7 +84,7 @@ async function main() {
     apiKey: process.env.ANTHROPIC_AUTH_TOKEN,
     baseURL: process.env.ANTHROPIC_BASE_URL,
   });
-  const model = process.env.ANTHROPIC_MODEL ?? 'claude-haiku-4-5-20251001';
+  const model = process.env.ANTHROPIC_MODEL ?? 'anthropic.claude-4-5-haiku';
   const prisma = new PrismaClient();
 
   const domainClause = domain
@@ -98,40 +100,54 @@ async function main() {
   console.log(`Generating ${count} question(s)...`);
   console.log(`  domain: ${domain ?? 'all'}, difficulty: ${difficulty ?? 'mixed'}, lang: ${language}`);
 
-  const response = await client.messages.create({
-    model,
-    max_tokens: 4096,
-    system: [
-      {
-        type: 'text',
-        text: GENERATE_SYSTEM_PROMPT,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        cache_control: { type: 'ephemeral' } as any,
-      },
-    ],
-    tools: [GENERATE_TOOL],
-    tool_choice: { type: 'tool', name: 'create_questions' },
-    messages: [
-      {
-        role: 'user',
-        content: `Generate exactly ${count} CCA-F multiple-choice question(s).
+  const BATCH_SIZE = 10;
+  const batches: number[] = [];
+  let remaining = count;
+  while (remaining > 0) {
+    batches.push(Math.min(remaining, BATCH_SIZE));
+    remaining -= BATCH_SIZE;
+  }
+
+  type GeneratedQuestion = { domain: string; difficulty: string; language: string; text: string; options: string[]; correctIndex: number; explanation: string };
+
+  async function generateBatch(batchCount: number): Promise<GeneratedQuestion[]> {
+    const response = await client.messages.create({
+      model,
+      max_tokens: Math.min(512 * batchCount + 1024, 8192),
+      system: [
+        {
+          type: 'text',
+          text: GENERATE_SYSTEM_PROMPT,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          cache_control: { type: 'ephemeral' } as any,
+        },
+      ],
+      tools: [GENERATE_TOOL],
+      tool_choice: { type: 'tool', name: 'create_questions' },
+      messages: [
+        {
+          role: 'user',
+          content: `Generate exactly ${batchCount} CCA-F multiple-choice question(s).
 ${domainClause}
 ${difficultyClause}
 ${languageClause}
 Set the "language" field to "${language}" for every question.
 
 Use the create_questions tool to return the structured output.`,
-      },
-    ],
-  });
+        },
+      ],
+    });
 
-  const toolBlock = response.content.find((b): b is ToolUseBlock => b.type === 'tool_use');
-  if (!toolBlock) {
-    console.error('No tool_use block in response');
-    process.exit(1);
+    const toolBlock = response.content.find((b): b is ToolUseBlock => b.type === 'tool_use');
+    if (!toolBlock) return [];
+    return (toolBlock.input as { questions: GeneratedQuestion[] }).questions ?? [];
   }
 
-  const questions = (toolBlock.input as { questions: Array<{ domain: string; difficulty: string; language: string; text: string; options: string[]; correctIndex: number; explanation: string }> }).questions ?? [];
+  const questions: GeneratedQuestion[] = [];
+  for (const batchCount of batches) {
+    const batch = await generateBatch(batchCount);
+    questions.push(...batch);
+  }
 
   if (questions.length === 0) {
     console.error('No questions generated');
